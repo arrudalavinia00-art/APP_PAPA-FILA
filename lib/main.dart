@@ -10,13 +10,11 @@ class PapaFilaApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'PapaFila',
       debugShowCheckedModeBanner: false,
+      title: 'Papa-Fila',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF2D5A4C),
-          primary: const Color(0xFF2D5A4C), // Verde escuro idêntico ao protótipo
-          surface: const Color(0xFFF2F7F5),
         ),
         useMaterial3: true,
       ),
@@ -41,9 +39,6 @@ class ItemCardapio {
   });
 }
 
-// ==========================================
-// TELA 1: CARDÁPIO E PEDIDO
-// ==========================================
 class MenuScreen extends StatefulWidget {
   const MenuScreen({super.key});
 
@@ -79,43 +74,66 @@ class _MenuScreenState extends State<MenuScreen> {
     ),
   ];
 
-  double get _valorTotal =>
-      _itens.fold(0, (total, item) => total + (item.preco * item.quantidade));
+  double get _valorTotal => _itens.fold(
+        0,
+        (total, item) => total + item.preco * item.quantidade,
+      );
 
-  int get _totalItens =>
-      _itens.fold(0, (total, item) => total + item.quantidade);
+  int get _totalItens => _itens.fold(
+        0,
+        (total, item) => total + item.quantidade,
+      );
 
   @override
   Widget build(BuildContext context) {
-    final themeColor = Theme.of(context).colorScheme.primary;
+    const themeColor = Color(0xFF2D5A4C);
 
     return Scaffold(
       backgroundColor: const Color(0xFFEFEFEF),
       appBar: AppBar(
         backgroundColor: themeColor,
-        elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.menu, color: Colors.white),
           onPressed: () {},
         ),
         title: const Text(
           'Cardápio',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.shopping_cart_outlined, color: Colors.white),
+            icon: const Icon(Icons.settings, color: Colors.white),
+            tooltip: 'Preferências',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const PreferencesScreen(),
+                ),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(
+              Icons.shopping_cart_outlined,
+              color: Colors.white,
+            ),
             onPressed: () {},
           ),
         ],
       ),
       body: Column(
         children: [
-      // Banner Simples
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ),
             color: const Color(0xFFE2ECE9),
             child: const Text(
               'O que você vai pedir hoje?',
@@ -126,23 +144,19 @@ class _MenuScreenState extends State<MenuScreen> {
               ),
             ),
           ),
-          // Lista dos Itens do Cardápio
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.all(12),
               itemCount: _itens.length,
               itemBuilder: (context, index) {
                 final item = _itens[index];
+
                 return Card(
                   margin: const EdgeInsets.only(bottom: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
                   child: Padding(
                     padding: const EdgeInsets.all(10),
                     child: Row(
                       children: [
-                        // Imagem/Ícone do Produto
                         Container(
                           width: 50,
                           height: 50,
@@ -150,13 +164,16 @@ class _MenuScreenState extends State<MenuScreen> {
                             color: Colors.grey.shade200,
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: Icon(Icons.fastfood, color: themeColor),
+                          child: const Icon(
+                            Icons.fastfood,
+                            color: themeColor,
+                          ),
                         ),
                         const SizedBox(width: 12),
-                        // Nome, Descrição e Preço Visualmente Claro
                         Expanded(
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment:
+                                CrossAxisAlignment.start,
                             children: [
                               Text(
                                 item.nome,
@@ -175,7 +192,7 @@ class _MenuScreenState extends State<MenuScreen> {
                               const SizedBox(height: 4),
                               Text(
                                 'R\$ ${item.preco.toStringAsFixed(2)}',
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 14,
                                   color: themeColor,
@@ -184,28 +201,33 @@ class _MenuScreenState extends State<MenuScreen> {
                             ],
                           ),
                         ),
-                        // Seletor de Quantidade
                         Row(
                           children: [
                             IconButton(
                               visualDensity: VisualDensity.compact,
                               icon: const Icon(Icons.remove),
                               onPressed: item.quantidade > 0
-                                  ? () => setState(() => item.quantidade--)
+                                  ? () {
+                                      setState(() {
+                                        item.quantidade--;
+                                      });
+                                    }
                                   : null,
                             ),
                             Text(
                               '${item.quantidade}',
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 14,
                               ),
                             ),
                             IconButton(
                               visualDensity: VisualDensity.compact,
                               icon: const Icon(Icons.add),
-                              onPressed: () =>
-                                  setState(() => item.quantidade++),
+                              onPressed: () {
+                                setState(() {
+                                  item.quantidade++;
+                                });
+                              },
                             ),
                           ],
                         ),
@@ -218,7 +240,6 @@ class _MenuScreenState extends State<MenuScreen> {
           ),
         ],
       ),
-      // Rodapé Fixo (Zona do Polegar) conforme Wireframe
       bottomNavigationBar: Container(
         color: Colors.white,
         padding: const EdgeInsets.all(16),
@@ -226,16 +247,18 @@ class _MenuScreenState extends State<MenuScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Caixinha de Resumo de Valor
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0xFFE2ECE9),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment:
+                      MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       'TOTAL ($_totalItens itens):',
@@ -246,7 +269,7 @@ class _MenuScreenState extends State<MenuScreen> {
                     ),
                     Text(
                       'R\$ ${_valorTotal.toStringAsFixed(2)}',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
                         color: themeColor,
@@ -256,7 +279,6 @@ class _MenuScreenState extends State<MenuScreen> {
                 ),
               ),
               const SizedBox(height: 10),
-              // Botão Principal de Confirmação
               SizedBox(
                 width: double.infinity,
                 height: 50,
@@ -272,9 +294,11 @@ class _MenuScreenState extends State<MenuScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => PickupScreen(
+                              builder: (_) => PickupScreen(
                                 itens: _itens
-                                    .where((i) => i.quantidade > 0)
+                                    .where(
+                                      (item) => item.quantidade > 0,
+                                    )
                                     .toList(),
                                 valorTotal: _valorTotal,
                               ),
@@ -300,9 +324,6 @@ class _MenuScreenState extends State<MenuScreen> {
   }
 }
 
-// ==========================================
-// TELA 2: RETIRADA EXPRESS
-// ==========================================
 class PickupScreen extends StatelessWidget {
   final List<ItemCardapio> itens;
   final double valorTotal;
@@ -315,19 +336,20 @@ class PickupScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeColor = Theme.of(context).colorScheme.primary;
+    const themeColor = Color(0xFF2D5A4C);
 
     return Scaffold(
       backgroundColor: const Color(0xFFEFEFEF),
       appBar: AppBar(
         backgroundColor: themeColor,
+        foregroundColor: Colors.white,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           'Retirada Express',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
       ),
@@ -335,10 +357,9 @@ class PickupScreen extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            // Status de Pedido Pronto
             const Icon(
               Icons.check_circle,
-              color: Color(0xFF2D5A4C),
+              color: themeColor,
               size: 48,
             ),
             const SizedBox(height: 8),
@@ -352,12 +373,13 @@ class PickupScreen extends StatelessWidget {
             ),
             const Text(
               'Apresente a imagem abaixo no balcão para retirar.',
-              style: TextStyle(fontSize: 12, color: Colors.black54),
               textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.black54,
+              ),
             ),
             const SizedBox(height: 20),
-
-            // Bloco do QR Code e Senha
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -394,10 +416,7 @@ class PickupScreen extends StatelessWidget {
                 ],
               ),
             ),
-
             const SizedBox(height: 20),
-
-            // Card Resumo dos Itens Comprados
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -417,14 +436,18 @@ class PickupScreen extends StatelessWidget {
                   const Divider(),
                   ...itens.map(
                     (item) => Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 4,
+                      ),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('${item.quantidade}x ${item.nome}'),
+                          Text(
+                            '${item.quantidade}x ${item.nome}',
+                          ),
                           Text(
                             'R\$ ${(item.preco * item.quantidade).toStringAsFixed(2)}',
-                            style: const TextStyle(fontWeight: FontWeight.w600),
                           ),
                         ],
                       ),
@@ -432,15 +455,18 @@ class PickupScreen extends StatelessWidget {
                   ),
                   const Divider(),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment:
+                        MainAxisAlignment.spaceBetween,
                     children: [
                       const Text(
                         'Total',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       Text(
                         'R\$ ${valorTotal.toStringAsFixed(2)}',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           color: themeColor,
                           fontSize: 16,
@@ -453,6 +479,373 @@ class PickupScreen extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class PreferencesScreen extends StatefulWidget {
+  const PreferencesScreen({super.key});
+
+  @override
+  State<PreferencesScreen> createState() =>
+      _PreferencesScreenState();
+}
+
+class _PreferencesScreenState extends State<PreferencesScreen> {
+  bool notificacoesAtivas = true;
+  double volumeAlertas = 0.7;
+  String? mesaSelecionada;
+
+  void selecionarMesa() {
+    print('Mesa Selecionada para Entrega!');
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Selecionar Mesa'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _opcaoMesa('Mesa 1'),
+              _opcaoMesa('Mesa 2'),
+              _opcaoMesa('Mesa 3'),
+              _opcaoMesa('Mesa 4'),
+              _opcaoMesa('Mesa 5'),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _opcaoMesa(String mesa) {
+    return ListTile(
+      leading: const Icon(
+        Icons.table_restaurant,
+        color: Color(0xFF2D5A4C),
+      ),
+      title: Text(mesa),
+      trailing: mesaSelecionada == mesa
+          ? const Icon(
+              Icons.check,
+              color: Colors.green,
+            )
+          : null,
+      onTap: () {
+        setState(() {
+          mesaSelecionada = mesa;
+        });
+
+        Navigator.pop(context);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('$mesa selecionada para entrega!'),
+            backgroundColor: const Color(0xFF2D5A4C),
+          ),
+        );
+      },
+    );
+  }
+
+  void redefinirPadroes() {
+    setState(() {
+      notificacoesAtivas = true;
+      volumeAlertas = 0.7;
+      mesaSelecionada = null;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Preferências redefinidas!'),
+      ),
+    );
+  }
+
+  void salvarPreferencias() {
+    print('Preferências salvas!');
+    print('Notificações: $notificacoesAtivas');
+    print('Volume: $volumeAlertas');
+    print('Mesa: ${mesaSelecionada ?? "Nenhuma"}');
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          'Preferências salvas com sucesso!',
+        ),
+        backgroundColor: Colors.green,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    const themeColor = Color(0xFF2D5A4C);
+
+    return Scaffold(
+      backgroundColor: const Color(0xFFEFEFEF),
+      appBar: AppBar(
+        backgroundColor: themeColor,
+        foregroundColor: Colors.white,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          tooltip: 'Voltar ao cardápio',
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text(
+          'Preferências do Usuário',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Personalizando a Experiência',
+                style: TextStyle(
+                  fontSize: 23,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1E3A32),
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Configure como deseja receber os alertas '
+                'e utilizar o Papa-Fila.',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey,
+                ),
+              ),
+              const SizedBox(height: 25),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(18),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(14),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.06),
+                      blurRadius: 8,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Row(
+                      children: [
+                        Icon(
+                          Icons.notifications_active,
+                          color: themeColor,
+                          size: 27,
+                        ),
+                        SizedBox(width: 10),
+                        Text(
+                          'Alertas e Notificações',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF1E3A32),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 15),
+                    SwitchListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: const Text(
+                        'Notificações de Pedido Pronto',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      subtitle: Text(
+                        notificacoesAtivas
+                            ? 'Notificações ativadas'
+                            : 'Notificações desativadas',
+                      ),
+                      value: notificacoesAtivas,
+                      activeColor: themeColor,
+                      onChanged: (valor) {
+                        setState(() {
+                          notificacoesAtivas = valor;
+                        });
+                      },
+                    ),
+                    const Divider(height: 25),
+                    const Text(
+                      'Volume dos Alertas Sonoros',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.volume_mute,
+                          color: Colors.grey,
+                        ),
+                        Expanded(
+                          child: Slider(
+                            value: volumeAlertas,
+                            min: 0.0,
+                            max: 1.0,
+                            divisions: 10,
+                            activeColor: themeColor,
+                            inactiveColor:
+                                Color(0xFFD5E4DF),
+                            label:
+                                '${(volumeAlertas * 100).round()}%',
+                            onChanged: (valor) {
+                              setState(() {
+                                volumeAlertas = valor;
+                              });
+                            },
+                          ),
+                        ),
+                        const Icon(
+                          Icons.volume_up,
+                          color: themeColor,
+                        ),
+                      ],
+                    ),
+                    Center(
+                      child: Text(
+                        'Volume: '
+                        '${(volumeAlertas * 100).round()}%',
+                        style: const TextStyle(
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 22),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(18),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(14),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.06),
+                      blurRadius: 8,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Row(
+                      children: [
+                        Icon(
+                          Icons.table_restaurant,
+                          color: themeColor,
+                          size: 27,
+                        ),
+                        SizedBox(width: 10),
+                        Text(
+                          'Mesa / Área de Consumo',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF1E3A32),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      mesaSelecionada == null
+                          ? 'Nenhuma mesa selecionada.'
+                          : 'Mesa selecionada: $mesaSelecionada',
+                      style: const TextStyle(
+                        color: Colors.grey,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Center(
+                      child: GestureDetector(
+                        onTap: selecionarMesa,
+                        child: Container(
+                          width: 150,
+                          height: 150,
+                          decoration: BoxDecoration(
+                            color: Colors.blue,
+                            borderRadius:
+                                BorderRadius.circular(18),
+                            boxShadow: [
+                              BoxShadow(
+                                color:
+                                    Colors.blue.withOpacity(0.30),
+                                blurRadius: 10,
+                                offset: const Offset(0, 5),
+                              ),
+                            ],
+                          ),
+                          child: const Column(
+                            mainAxisAlignment:
+                                MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.table_restaurant,
+                                color: Colors.white,
+                                size: 55,
+                              ),
+                              SizedBox(height: 10),
+                              Text(
+                                'Selecionar Mesa',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 25),
+              TextButton.icon(
+                onPressed: redefinirPadroes,
+                icon: const Icon(
+                  Icons.restore,
+                  color: Colors.red,
+                ),
+                label: const Text(
+                  'Redefinir Padrões',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+              const SizedBox(height: 80),
+            ],
+          ),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: salvarPreferencias,
+        backgroundColor: themeColor,
+        foregroundColor: Colors.white,
+        tooltip: 'Salvar preferências',
+        child: const Icon(Icons.check),
       ),
     );
   }
